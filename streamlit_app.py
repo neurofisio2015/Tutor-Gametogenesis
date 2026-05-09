@@ -96,7 +96,6 @@ model = genai.GenerativeModel(
     system_instruction=SYSTEM_PROMPT
 )
 # ------------------------------------
-)
 
 # Inicializar historial de chat
 if "messages" not in st.session_state:
