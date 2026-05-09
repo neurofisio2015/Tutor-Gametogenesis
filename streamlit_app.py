@@ -2,18 +2,29 @@ import streamlit as st
 import google.generativeai as genai
 
 # Configuración visual
-st.set_page_config(page_title="Tutor de Gametogénesis", page_icon="🧬")
+st.set_page_config(page_title="Tutor de Biología", page_icon="🧬")
 st.title("🧬 Tutor de Aprendizaje Guiado")
-st.info("Bienvenido, Mariano. Este es tu espacio de aprendizaje sobre Gametogénesis.")
 
-# Acceso seguro a la API Key (no está escrita aquí, se configura en Streamlit)
+# Mensaje de bienvenida genérico (el bot preguntará el nombre luego)
+st.info("Bienvenido al espacio de aprendizaje sobre Gametogénesis.")
+
+# Acceso seguro a la API Key
 if "GOOGLE_API_KEY" not in st.secrets:
-    st.error("Error de configuración: API Key no encontrada.")
+    st.error("Error: No se encontró la configuración de seguridad (API Key).")
     st.stop()
 
+# Configuración del modelo con el nombre técnico correcto
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-# Aquí va tu PROMPT perfeccionado
+# NOTA: Usamos el prefijo 'models/' para evitar el error NotFound
+generation_config = {
+  "temperature": 0.5,
+  "top_p": 0.95,
+  "top_k": 64,
+  "max_output_tokens": 8192,
+}
+
+# AQUÍ PEGAS TU PROMPT (Asegúrate de incluir las reglas que definimos)
 SYSTEM_PROMPT = """
 # PERSONA Y ROL
 Eres el "Tutor Pro de Gametogénesis", un asistente pedagógico de élite. Tu método es el Aprendizaje Guiado y el Diálogo Socrático. Tu objetivo es que el alumno demuestre dominio total antes de avanzar.
@@ -63,21 +74,42 @@ Eres el "Tutor Pro de Gametogénesis", un asistente pedagógico de élite. Tu m�
 - Si el alumno responde correctamente pero detectas que lo hace "de memoria" sin entender la lógica, plantea una pregunta de "por qué" o "qué pasaría si...".
 """
 
-model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=SYSTEM_PROMPT)
+# Inicializamos el modelo
+# He cambiado el nombre a 'models/gemini-1.5-flash' que es más estable en API
+model = genai.GenerativeModel(
+    model_name="models/gemini-1.5-flash",
+    generation_config=generation_config,
+    system_instruction=SYSTEM_PROMPT
+)
 
+# Inicializar historial de chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
+    # Opcional: El bot puede iniciar la conversación
+    # st.session_state.messages.append({"role": "assistant", "content": "¡Hola! Soy tu tutor de Biología. ¿Cómo te llamas?"})
 
+# Mostrar historial
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Escribe tu respuesta aquí..."):
+# Lógica de respuesta
+if prompt := st.chat_input("Escribe aquí..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        response = model.generate_content(prompt)
-        st.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
+        try:
+            # En la API, el historial debe enviarse para que el bot tenga contexto
+            chat_session = model.start_chat(
+                history=[
+                    {"role": m["role"] if m["role"] != "assistant" else "model", "parts": [m["content"]]}
+                    for m in st.session_state.messages[:-1]
+                ]
+            )
+            response = chat_session.send_message(prompt)
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
+        except Exception as e:
+            st.error(f"Ocurrió un error en la conexión: {e}")
