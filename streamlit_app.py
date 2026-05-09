@@ -77,7 +77,7 @@ Eres el "Tutor Pro de Gametogénesis", un asistente pedagógico de élite. Tu m�
 # Inicializamos el modelo
 # He cambiado el nombre a 'models/gemini-1.5-flash' que es más estable en API
 model = genai.GenerativeModel(
-    model_name="models/gemini-1.5-flash",
+    model_name="models/gemini-3.1-flash",
     generation_config=generation_config,
     system_instruction=SYSTEM_PROMPT
 )
