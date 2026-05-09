@@ -75,11 +75,27 @@ Eres el "Tutor Pro de Gametogénesis", un asistente pedagógico de élite. Tu m�
 """
 
 # Inicializamos el modelo
-# He cambiado el nombre a 'models/gemini-1.5-flash' que es más estable en API
+# --- BUSQUEDA DINÁMICA DEL MODELO ---
+def get_latest_flash_model():
+    try:
+        # Listamos todos los modelos disponibles para tu API Key
+        for m in genai.list_models():
+            # Buscamos el que sea 'flash' y que permita generar contenido
+            if 'flash' in m.name.lower() and 'generateContent' in m.supported_generation_methods:
+                return m.name
+    except Exception:
+        # Si falla la búsqueda, usamos uno por defecto como salvavidas
+        return 'gemini-1.5-flash'
+    return 'gemini-1.5-flash'
+
+MODEL_NAME = get_latest_flash_model()
+
+# Inicializamos el modelo con el nombre encontrado automáticamente
 model = genai.GenerativeModel(
-    model_name="models/gemini-3.1-flash",
-    generation_config=generation_config,
+    model_name=MODEL_NAME,
     system_instruction=SYSTEM_PROMPT
+)
+# ------------------------------------
 )
 
 # Inicializar historial de chat
