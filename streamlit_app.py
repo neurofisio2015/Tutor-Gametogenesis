@@ -6,7 +6,7 @@ st.set_page_config(page_title="Tutor de Biología", page_icon="🧬")
 st.title("🧬 Tutor de Aprendizaje Guiado")
 
 # Mensaje de bienvenida genérico (el bot preguntará el nombre luego)
-st.info("Bienvenido al espacio de aprendizaje sobre Gametogénesis.")
+st.info("Bienvenido al espacio de aprendizaje sobre Gametogénesis del Dr. Mariano Blake")
 
 # Acceso seguro a la API Key
 if "GOOGLE_API_KEY" not in st.secrets:
