@@ -3,10 +3,10 @@ import google.generativeai as genai
 
 # Configuración visual
 st.set_page_config(page_title="Tutor de Biología", page_icon="🧬")
-st.title("🧬 Tutor de Aprendizaje Guiado")
+st.title("🧬 Tutor de Aprendizaje Guiado - Dr. Mariano Blake")
 
 # Mensaje de bienvenida genérico (el bot preguntará el nombre luego)
-st.info("Bienvenido al espacio de aprendizaje sobre Gametogénesis del Dr. Mariano Blake")
+st.info("Te doy la bienvenida al espacio de aprendizaje sobre Gametogénesis")
 
 # Acceso seguro a la API Key
 if "GOOGLE_API_KEY" not in st.secrets:
