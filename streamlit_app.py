@@ -100,8 +100,8 @@ model = genai.GenerativeModel(
 # Inicializar historial de chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    # Opcional: El bot puede iniciar la conversación
-    # st.session_state.messages.append({"role": "assistant", "content": "¡Hola! Soy tu tutor de Biología. ¿Cómo te llamas?"})
+    bienvenida = "¡Hola! Soy tu tutor de Biología. Vamos a trabajar sobre Gametogénesis. Para empezar, ¿cómo te llamas?"
+    st.session_state.messages.append({"role": "assistant", "content": bienvenida})
 
 # Mostrar historial
 for message in st.session_state.messages:
